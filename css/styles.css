@@ -87,6 +87,7 @@ body {
   color: var(--color-text-primary);
   line-height: 1.5;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   position: relative;
   -webkit-font-smoothing: antialiased;
@@ -1238,21 +1239,21 @@ body.lang-zh .lang-en-only { display: none; }
   }
 
   .hero-credit {
-    bottom: var(--space-md);
+    bottom: 58px;
     right: var(--space-md);
     font-size: 0.6875rem;
   }
 
   .hero-copyright {
-    bottom: var(--space-xs);
+    bottom: 42px;
     right: var(--space-md);
     font-size: 0.5625rem;
   }
 
   .calendar-card {
-    bottom: 90px;
+    bottom: 70px;
     width: calc(100% - var(--space-xs) * 2);
-    max-height: calc(100vh - 138px);
+    max-height: calc(100vh - 110px);
   }
 
   .calendar-header {
