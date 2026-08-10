@@ -81,10 +81,9 @@ var Calendar = (function() {
     var daysInMonth = new Date(this.currentYear, this.currentMonth + 1, 0).getDate();
     var prevMonthDays = new Date(this.currentYear, this.currentMonth, 0).getDate();
 
-    var rowsNeeded = Math.ceil((firstDay + daysInMonth) / 7);
-    // 至少5行，保证手机端各月份高度一致不跳动
-    if (rowsNeeded < 5) rowsNeeded = 5;
-    var totalCells = rowsNeeded * 7;
+    // 始终 6 行 × 7 列 = 42 格，保证各月份高度一致不跳动
+    // 2026年5月、8月等月份确实需要6行（1号落在周五/六 + 31天）
+    var totalCells = 42;
     var cell, dateNum, dayOfWeek, i;
 
     for (i = 0; i < totalCells; i++) {
