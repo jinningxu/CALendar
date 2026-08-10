@@ -81,7 +81,9 @@ var Calendar = (function() {
     var daysInMonth = new Date(this.currentYear, this.currentMonth + 1, 0).getDate();
     var prevMonthDays = new Date(this.currentYear, this.currentMonth, 0).getDate();
 
-    var rowsNeeded = Math.ceil((firstDay + daysInMonth) / 7); // 最多5行，31天不可能需要6行
+    var rowsNeeded = Math.ceil((firstDay + daysInMonth) / 7);
+    // 至少5行，保证手机端各月份高度一致不跳动
+    if (rowsNeeded < 5) rowsNeeded = 5;
     var totalCells = rowsNeeded * 7;
     var cell, dateNum, dayOfWeek, i;
 

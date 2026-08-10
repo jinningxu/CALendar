@@ -497,8 +497,6 @@ body.lang-zh .lang-en-only { display: none; }
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  grid-auto-rows: 1fr;
-  height: calc(6 * var(--cell-min-height));
   overflow: hidden;
   border-radius: 0 0 var(--radius-lg) var(--radius-lg);
 }
