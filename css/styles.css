@@ -1,0 +1,1339 @@
+/* ============================================================
+   加州自然日历 | California Natural Calendar — styles.css
+   Apple Calendar 视觉风格 · 双语 · 响应式
+   ============================================================ */
+
+/* ==========================================
+   1. 设计变量 (Design Tokens)
+   ========================================== */
+:root {
+  /* --- Apple Calendar 配色 --- */
+  --color-bg:              #f2f2f7;
+  --color-card-bg:         #ffffff;
+  --color-card-shadow:     rgba(0, 0, 0, 0.08);
+  --color-text-primary:    #1d1d1f;
+  --color-text-secondary:  #6e6e73;
+  --color-text-tertiary:   #aeaeb2;
+  --color-border:          #e5e5ea;
+  --color-today-bg:        #007aff;
+  --color-today-text:      #ffffff;
+  --color-holiday:         #e67e22;
+  --color-holiday-bg:      #fef5ec;
+  --color-species:         #34c759;
+  --color-species-bg:      #e8f8ed;
+  --color-modal-overlay:   rgba(0, 0, 0, 0.45);
+  --color-hero-overlay:    rgba(0, 0, 0, 0.2);
+
+  /* --- 字体 (San Francisco 系统栈) --- */
+  --font-system: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+                 "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-rounded: -apple-system, BlinkMacSystemFont, "SF Pro Rounded",
+                  "Segoe UI", Roboto, sans-serif;
+
+  /* --- 字号 --- */
+  --fs-xs:   0.6875rem;   /* 11px */
+  --fs-sm:   0.8125rem;   /* 13px */
+  --fs-base: 0.9375rem;   /* 15px */
+  --fs-md:   1.0625rem;   /* 17px */
+  --fs-lg:   1.25rem;     /* 20px */
+  --fs-xl:   1.75rem;     /* 28px */
+  --fs-2xl:  2.25rem;     /* 36px */
+  --fs-3xl:  3rem;        /* 48px */
+
+  /* --- 间距 --- */
+  --space-xs:  0.25rem;
+  --space-sm:  0.5rem;
+  --space-md:  1rem;
+  --space-lg:  1.5rem;
+  --space-xl:  2rem;
+  --space-2xl: 3rem;
+
+  /* --- 布局 --- */
+  --calendar-max-width:   880px;
+  --cell-min-height:       90px;
+  --cell-min-height-sm:    64px;
+  --radius-sm:  6px;
+  --radius-md:  12px;
+  --radius-lg:  20px;
+  --radius-full: 50%;
+
+  /* --- 阴影 --- */
+  --shadow-card:  0 2px 16px var(--color-card-shadow);
+  --shadow-modal: 0 12px 48px rgba(0, 0, 0, 0.18);
+  --shadow-hero:  0 4px 20px rgba(0, 0, 0, 0.12);
+
+  /* --- 过渡 --- */
+  --ease-fast:  150ms ease;
+  --ease-normal: 250ms ease;
+}
+
+/* ==========================================
+   2. 全局重置
+   ========================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-system);
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  line-height: 1.5;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+/* ==========================================
+   3. 语言切换系统
+   ========================================== */
+/* 默认（英文模式）：隐藏中文专用元素 */
+body:not(.lang-zh) .lang-zh-only { display: none; }
+
+/* 中文模式：隐藏英文专用元素 */
+body.lang-zh .lang-en-only { display: none; }
+
+/* 语言切换器 — 两个独立圆形按钮 */
+.lang-switcher {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-lg);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lang-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-full);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--ease-fast);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+}
+
+.lang-btn:hover {
+  color: var(--color-text-primary);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+.lang-btn.active {
+  background: var(--color-today-bg);
+  color: white;
+  box-shadow: 0 2px 10px rgba(0, 122, 255, 0.3);
+}
+
+.lang-btn:hover.active {
+  background: #0066d6;
+}
+
+.lang-divider {
+  display: none;
+}
+
+/* 左上角按钮组 */
+.top-left-buttons {
+  position: absolute;
+  top: var(--space-md);
+  left: var(--space-lg);
+  z-index: 100;
+  display: flex;
+  gap: 8px;
+}
+.ideas-entry-btn,
+.guide-entry-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-full);
+  font-size: 1.1rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--ease-fast), transform var(--ease-fast);
+}
+.ideas-entry-btn:hover,
+.guide-entry-btn:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: scale(1.08);
+}
+
+/* ==========================================
+   4. Hero 区域 (月度风光背景)
+   ========================================== */
+.hero {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero-image {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-color: #3a3a3a;
+  /* 默认渐变占位，data.js 中设置 actual background-image */
+  background-image:
+    linear-gradient(135deg, #2c3e50 0%, #1a252f 30%, #2c5f7c 60%, #3a7ca5 100%);
+  position: relative;
+  transition: background-image 0.6s ease;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 30%,
+    var(--color-hero-overlay) 100%
+  );
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: var(--space-xl) var(--space-2xl);
+  color: white;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.hero-month-zh {
+  font-size: var(--fs-3xl);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+}
+
+.hero-month-en {
+  font-size: 2.5rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  line-height: 1.1;
+}
+
+.hero-season {
+  font-size: var(--fs-lg);
+  margin-top: var(--space-sm);
+  opacity: 0.9;
+  font-weight: 400;
+}
+
+.hero-credit {
+  position: absolute;
+  bottom: var(--space-xl);
+  right: var(--space-2xl);
+  z-index: 5;
+  font-size: var(--fs-base);
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+  text-align: right;
+  pointer-events: none;
+  user-select: none;
+}
+
+.hero-copyright {
+  position: absolute;
+  bottom: var(--space-md);
+  right: var(--space-2xl);
+  z-index: 5;
+  font-size: var(--fs-xs);
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.7);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+  text-align: right;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ==========================================
+   5. 日历卡片
+   ========================================== */
+.calendar-card {
+  position: absolute;
+  bottom: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - var(--space-md) * 2);
+  max-width: var(--calendar-max-width);
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  overflow: visible;
+  z-index: 1;
+  max-height: calc(100vh - 180px);
+}
+
+/* --- 5a. 导航栏 --- */
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-lg) var(--space-lg) var(--space-md);
+  gap: var(--space-sm);
+  position: relative;
+  background: transparent;
+}
+
+.btn-nav {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-primary);
+  transition: background var(--ease-fast);
+}
+
+.btn-nav:hover {
+  background: var(--color-bg);
+}
+
+.calendar-title {
+  text-align: center;
+  min-width: 200px;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: background var(--ease-fast);
+}
+
+.calendar-title:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.title-chevron {
+  opacity: 0.4;
+  transition: transform var(--ease-fast), opacity var(--ease-fast);
+}
+
+.calendar-title:hover .title-chevron {
+  opacity: 0.7;
+}
+
+.title-zh {
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  display: block;
+}
+
+.title-en {
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  display: block;
+}
+
+.btn-today {
+  position: absolute;
+  right: var(--space-lg);
+  background: var(--color-bg);
+  padding: var(--space-xs) var(--space-md);
+  border-radius: 8px;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--color-text-primary);
+  transition: background var(--ease-fast);
+  line-height: 1.3;
+  text-align: center;
+}
+
+.btn-today:hover {
+  background: #e5e5ea;
+}
+
+/* --- 月份跳转器 --- */
+.month-picker {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-card-bg);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.14);
+  padding: var(--space-md);
+  z-index: 20;
+  min-width: 260px;
+  margin-top: 4px;
+}
+
+.month-picker[hidden] {
+  display: none;
+}
+
+.picker-year-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+  padding-bottom: var(--space-sm);
+  border-bottom: 0.5px solid var(--color-border);
+}
+
+.picker-year-label {
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  min-width: 60px;
+  text-align: center;
+}
+
+.picker-year-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+  transition: background var(--ease-fast);
+}
+
+.picker-year-btn:hover {
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+}
+
+.picker-month-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+
+.picker-month-btn {
+  padding: 6px 4px;
+  border-radius: 6px;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--color-text-primary);
+  text-align: center;
+  transition: background var(--ease-fast);
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+
+.picker-month-btn:hover {
+  background: var(--color-bg);
+}
+
+.picker-month-btn.active {
+  background: var(--color-today-bg);
+  color: white;
+}
+
+/* --- 5b. 星期标题行 --- */
+.calendar-dow {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border-top: 0.5px solid var(--color-border);
+  border-bottom: 0.5px solid var(--color-border);
+}
+
+.dow-cell {
+  text-align: center;
+  padding: var(--space-sm) 0;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+}
+
+.dow-weekend {
+  color: var(--color-text-primary);
+}
+
+/* --- 5c. 日历网格 --- */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: 1fr;
+  height: calc(6 * var(--cell-min-height));
+  overflow: hidden;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+.cal-cell {
+  position: relative;
+  border-right: 0.5px solid var(--color-border);
+  border-bottom: 0.5px solid var(--color-border);
+  min-height: var(--cell-min-height);
+  padding: var(--space-sm);
+  cursor: default;
+  display: flex;
+  flex-direction: column;
+  transition: background-color var(--ease-fast);
+  user-select: none;
+}
+
+/* 去掉每行最后一格和最后一行的边框 */
+.cal-cell:nth-child(7n) { border-right: none; }
+.cal-cell:nth-child(n+36):nth-child(-n+42) { border-bottom: none; }
+
+/* 日期数字 (左上角，Apple Calendar 风格) */
+.cal-cell .date-number {
+  font-family: var(--font-rounded);
+  font-size: var(--fs-lg);
+  font-weight: 500;
+  color: var(--color-text-primary);
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  line-height: 1;
+  flex-shrink: 0;
+  transition: background 0.2s, color 0.2s;
+  text-align: center;
+}
+
+/* 农历日期 (仅中文模式可见) */
+.cal-cell .lunar-date {
+  font-size: 0.65rem;
+  color: #000000;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  width: 30px;
+  flex-shrink: 0;
+}
+
+/* 补位日 (非当月) */
+.cal-cell.padding-day {
+  background-color: rgba(0, 0, 0, 0.06);
+}
+.cal-cell.padding-day .date-number {
+  color: var(--color-text-tertiary);
+}
+.cal-cell.padding-day .lunar-date {
+  color: var(--color-text-tertiary);
+}
+}
+
+/* 当月日 */
+.cal-cell.current-month {
+  background-color: transparent;
+  cursor: pointer;
+}
+
+/* 悬停效果 */
+.cal-cell.current-month:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+/* 今日 */
+.cal-cell.today .date-number {
+  background-color: var(--color-today-bg);
+  color: var(--color-today-text);
+  font-weight: 600;
+}
+
+/* --- 5d. 单元格指示器 --- */
+.cell-indicators {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 2px;
+  flex-wrap: wrap;
+}
+
+.dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.dot.holiday-dot {
+  background-color: var(--color-holiday);
+}
+
+.dot.species-dot {
+  background-color: var(--color-species);
+}
+
+/* 闰年彩蛋标签 */
+.leap-day-label {
+  font-size: var(--fs-xs);
+  color: #e6c300;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  line-height: 1.3;
+  margin-top: 1px;
+  font-weight: 600;
+  animation: leapPulse 2s ease-in-out infinite;
+}
+
+@keyframes leapPulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+/* 闰日单元格悬停 */
+.cal-cell.leap-day:hover {
+  background: linear-gradient(135deg, rgba(255,215,0,0.28) 0%, rgba(255,165,0,0.18) 50%, rgba(255,215,0,0.28) 100%) !important;
+  border-color: rgba(255, 160, 0, 0.85) !important;
+  cursor: pointer;
+}
+
+/* 节假日文字标签 */
+.holiday-label {
+  font-size: var(--fs-base);
+  color: #1d1d1f;
+  white-space: normal;
+  word-break: break-word;
+  max-width: 100%;
+  line-height: 1.3;
+  margin-top: 1px;
+  font-weight: 500;
+}
+
+/* 键盘焦点：所有当月日可聚焦 */
+.cal-cell.current-month:focus-visible {
+  outline: 2px solid var(--color-today-bg);
+  outline-offset: -2px;
+  border-radius: var(--radius-sm);
+  z-index: 5;
+  position: relative;
+}
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color-modal-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity var(--ease-normal);
+  pointer-events: none;
+  padding: var(--space-md);
+}
+
+.modal-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-overlay[hidden] {
+  display: none;
+}
+
+.modal-card {
+  background: var(--color-card-bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-modal);
+  width: 100%;
+  max-width: 560px;
+  max-height: 88vh;
+  overflow-y: auto;
+  position: relative;
+  transform: translateY(20px) scale(0.98);
+  transition: transform var(--ease-normal);
+}
+
+.modal-overlay.open .modal-card {
+  transform: translateY(0) scale(1);
+}
+
+/* 建站想法弹窗 */
+.ideas-card {
+  max-width: 600px;
+}
+.ideas-body {
+  padding: var(--space-lg) var(--space-xl);
+}
+.ideas-header {
+  text-align: center;
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+}
+.ideas-header-title {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 4px 0;
+  letter-spacing: 0.02em;
+}
+.ideas-header-sub {
+  font-size: var(--fs-xs);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+.ideas-title {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  margin-bottom: var(--space-md);
+  color: var(--color-text-primary);
+}
+.ideas-content {
+  font-size: var(--fs-base);
+  line-height: 1.8;
+  color: var(--color-text-primary);
+}
+.ideas-content p {
+  margin-bottom: var(--space-sm);
+}
+.ideas-section-title {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  margin: var(--space-xl) 0 var(--space-sm) 0;
+  color: var(--color-text-primary);
+}
+.ideas-section-title:first-child {
+  margin-top: 0;
+}
+.ideas-sub-title {
+  font-size: var(--fs-base);
+  font-weight: 700;
+  margin: var(--space-md) 0 2px 0;
+  color: var(--color-text-primary);
+}
+.ideas-divider {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: var(--space-lg) 0;
+}
+.ideas-copyright {
+  font-size: var(--fs-base);
+  color: var(--color-text-primary);
+  line-height: 1.7;
+  margin-top: var(--space-sm);
+  margin-bottom: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-border);
+}
+.ideas-vibe {
+  font-size: var(--fs-base);
+  color: var(--color-text-primary);
+  line-height: 1.7;
+  margin-top: 0;
+  margin-bottom: var(--space-sm);
+}
+.ideas-ack-title,
+.ideas-contact-title {
+  font-weight: 700;
+  margin-top: var(--space-md);
+}
+.ideas-signature {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin: var(--space-2xl) 0 0 0;
+}
+.ideas-signature img {
+  max-width: 120px;
+  height: auto;
+  opacity: 0.85;
+}
+.ideas-signature-name,
+.ideas-signature-date,
+.ideas-signature-loc {
+  margin: 2px 0 0 0;
+  font-size: var(--fs-sm);
+  color: #000;
+}
+.ideas-contact-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0 0 var(--space-sm) 0;
+}
+.ideas-contact-list li {
+  margin-bottom: 2px;
+  line-height: 1.6;
+  font-size: var(--fs-sm);
+}
+.ideas-contact-list a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+.ideas-contact-list a:hover {
+  text-decoration: underline;
+}
+.ideas-content ul {
+  margin: 0 0 var(--space-sm) 0;
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+.ideas-content li {
+  margin-bottom: 2px;
+  line-height: 1.6;
+}
+
+/* 关闭按钮 */
+.modal-close {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: rgba(0, 0, 0, 0.35);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: background var(--ease-fast);
+}
+
+.modal-close:hover {
+  background: rgba(0, 0, 0, 0.55);
+}
+
+/* 图片来源栏 */
+.photo-credit-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 16px;
+  background: #f5f5f7;
+  border-bottom: 0.5px solid var(--color-border);
+  font-size: var(--fs-sm);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: background var(--ease-fast), color var(--ease-fast);
+  cursor: pointer;
+}
+
+.photo-credit-bar:hover {
+  background: #e8e8ed;
+  color: var(--color-text-primary);
+}
+
+.photo-credit-bar svg {
+  flex-shrink: 0;
+  opacity: 0.5;
+}
+
+.photo-credit-bar:hover svg {
+  opacity: 0.8;
+}
+
+/* 物种照片 */
+.modal-photo {
+  width: 100%;
+  height: 260px;
+  background: #e5e5ea;
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.modal-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.img-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #e8f8ed 0%, #d4edda 100%);
+}
+
+.placeholder-icon {
+  font-size: 3rem;
+  opacity: 0.5;
+}
+
+/* 弹窗主体 */
+.modal-body {
+  padding: var(--space-xl) var(--space-2xl) var(--space-2xl);
+}
+
+/* 物种名称 */
+.modal-names {
+  margin-bottom: var(--space-sm);
+}
+
+.name-zh {
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  line-height: 1.2;
+}
+
+.name-en {
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  line-height: 1.2;
+}
+
+.name-scientific {
+  display: block;
+  font-size: var(--fs-sm);
+  color: var(--color-text-secondary);
+  font-style: italic;
+  margin-top: 2px;
+}
+
+/* 类别标签 */
+.species-category {
+  display: inline-block;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+  background: var(--color-bg);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-md);
+}
+
+/* 描述 */
+.modal-description {
+  margin-bottom: var(--space-lg);
+}
+
+.modal-description p {
+  font-size: var(--fs-base);
+  color: var(--color-text-primary);
+  line-height: 1.7;
+}
+
+/* 分类层级卡片 */
+.modal-taxonomy {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: var(--space-md);
+}
+
+.taxon-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-bg);
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+}
+
+.taxon-label {
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  min-width: 28px;
+  flex-shrink: 0;
+}
+
+.taxon-value {
+  color: var(--color-text-primary);
+  font-style: italic;
+}
+
+/* 保护状况行 */
+.fact-row.conservation {
+  background: #fffbf0;
+}
+
+#modalConservationRow[hidden] {
+  display: none;
+}
+
+/* ==========================================
+   自然日记
+   ========================================== */
+.modal-journal {
+  margin-bottom: var(--space-lg);
+  padding-top: var(--space-md);
+  border-top: 0.5px solid var(--color-border);
+}
+
+.journal-title {
+  font-size: var(--fs-base);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.journal-textarea {
+  display: block;
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  border: 0.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-system);
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  background: #f9f9fb;
+  resize: vertical;
+  outline: none;
+  transition: border-color var(--ease-fast), background var(--ease-fast);
+  min-height: 80px;
+}
+
+.journal-textarea:focus {
+  border-color: var(--color-today-bg);
+  background: #fff;
+}
+
+.journal-textarea::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+.journal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-xs);
+}
+
+.journal-char-count {
+  font-size: var(--fs-xs);
+  color: var(--color-text-tertiary);
+  transition: color var(--ease-fast);
+}
+
+.journal-char-count.limit-reached {
+  color: #ff3b30;
+  font-weight: 600;
+}
+
+.journal-save-btn {
+  padding: var(--space-xs) var(--space-lg);
+  border-radius: var(--radius-sm);
+  background: var(--color-today-bg);
+  color: white;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background var(--ease-fast), transform var(--ease-fast);
+}
+
+.journal-save-btn:hover {
+  background: #0066d6;
+}
+
+.journal-save-btn:active {
+  transform: scale(0.96);
+}
+
+/* 保存成功反馈 */
+.journal-save-btn.saved {
+  background: var(--color-species);
+  pointer-events: none;
+}
+
+/* ==========================================
+   7. 页脚
+   ========================================== */
+.site-footer {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  z-index: 2;
+  padding: 8px 0;
+}
+
+.site-footer .footer-title {
+  font-size: var(--fs-base);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+  margin-bottom: 2px;
+}
+
+.footer-sub {
+  font-size: var(--fs-xs);
+  color: rgba(255,255,255,0.85);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  margin-top: 0;
+}
+
+/* ==========================================
+   8. 无障碍
+   ========================================== */
+/* 可见焦点指示器 */
+:focus-visible {
+  outline: 2px solid var(--color-today-bg);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.cal-cell:focus-visible {
+  outline: 2px solid var(--color-today-bg);
+  outline-offset: -2px;
+  border-radius: var(--radius-sm);
+  z-index: 5;
+  position: relative;
+}
+
+/* 减少动画偏好 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
+  }
+}
+
+/* 滚动条美化 */
+.modal-card::-webkit-scrollbar {
+  width: 5px;
+}
+
+.modal-card::-webkit-scrollbar-track {
+  background: transparent;
+  margin: var(--radius-lg) 0;
+}
+
+.modal-card::-webkit-scrollbar-thumb {
+  background: #c8c8ce;
+  border-radius: 3px;
+}
+
+/* ==========================================
+   9. 响应式
+   ========================================== */
+
+/* 平板及以下 */
+@media (max-width: 768px) {
+  :root {
+    --cell-min-height: var(--cell-min-height-sm);
+    --fs-3xl: 2rem;
+    --fs-2xl: 1.5rem;
+    --fs-xl: 1.125rem;
+  }
+
+  .hero-month-en { font-size: 1.75rem; }
+
+  .hero-overlay {
+    padding: var(--space-md) var(--space-lg);
+  }
+
+  .hero-credit {
+    bottom: var(--space-lg);
+    right: var(--space-lg);
+    font-size: var(--fs-sm);
+  }
+
+  .hero-copyright {
+    bottom: var(--space-sm);
+    right: var(--space-lg);
+    font-size: 0.625rem;
+  }
+
+  .calendar-card {
+    bottom: 105px;
+    width: calc(100% - var(--space-sm) * 2);
+    border-radius: var(--radius-md);
+    max-height: calc(100vh - 155px);
+  }
+
+  .calendar-header {
+    padding: var(--space-md) var(--space-sm);
+  }
+
+  .calendar-title {
+    min-width: 160px;
+  }
+
+  .btn-today {
+    right: var(--space-sm);
+    font-size: var(--fs-xs);
+    padding: 3px var(--space-sm);
+  }
+
+  .modal-card {
+    max-width: 95vw;
+    max-height: 85vh;
+  }
+
+  .modal-photo {
+    height: 200px;
+  }
+
+  .modal-body {
+    padding: var(--space-md) var(--space-lg);
+  }
+}
+
+/* 手机 */
+@media (max-width: 480px) {
+  :root {
+    --cell-min-height: 44px;
+    --fs-lg: 0.875rem;
+    --fs-3xl: 1.75rem;
+    --fs-2xl: 1.25rem;
+    --fs-xl: 1rem;
+  }
+
+  .hero-month-en { font-size: 1.4rem; }
+
+  .hero-overlay {
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  .hero-credit {
+    bottom: var(--space-md);
+    right: var(--space-md);
+    font-size: 0.6875rem;
+  }
+
+  .hero-copyright {
+    bottom: var(--space-xs);
+    right: var(--space-md);
+    font-size: 0.5625rem;
+  }
+
+  .calendar-card {
+    bottom: 90px;
+    width: calc(100% - var(--space-xs) * 2);
+    max-height: calc(100vh - 138px);
+  }
+
+  .calendar-header {
+    padding: var(--space-sm);
+    gap: 2px;
+  }
+
+  .calendar-title {
+    min-width: 140px;
+  }
+
+  .btn-today {
+    right: var(--space-xs);
+    font-size: 0.625rem;
+    padding: 2px var(--space-sm);
+  }
+
+  .dow-cell {
+    font-size: 0.625rem;
+    padding: var(--space-xs) 0;
+  }
+
+  .cal-cell {
+    padding: 3px;
+  }
+
+  .cal-cell .date-number {
+    width: 24px;
+    height: 24px;
+    font-size: var(--fs-base);
+  }
+
+  .holiday-label {
+    font-size: 0.8125rem;
+  }
+
+  .dot {
+    width: 4px;
+    height: 4px;
+  }
+
+  .lang-switcher {
+    top: var(--space-sm);
+    right: var(--space-sm);
+  }
+
+  .top-left-buttons {
+    top: var(--space-sm);
+    left: var(--space-sm);
+    gap: 6px;
+  }
+  .ideas-entry-btn,
+  .guide-entry-btn {
+    width: 34px;
+    height: 34px;
+  }
+
+  .modal-photo {
+    height: 160px;
+  }
+
+  .modal-body {
+    padding: var(--space-sm) var(--space-lg) var(--space-md);
+  }
+
+  .modal-taxonomy .taxon-row {
+    padding: var(--space-xs) var(--space-sm);
+  }
+}
+
+/* ==========================================
+   10. 占位渐变 (图片未加载时)
+   ========================================== */
+/* 物种图片占位渐变 — 按类别区分颜色 */
+.img-placeholder--bird       { background: linear-gradient(135deg, #e3f2fd, #bbdefb); }
+.img-placeholder--mammal     { background: linear-gradient(135deg, #fce4ec, #f8bbd0); }
+.img-placeholder--reptile    { background: linear-gradient(135deg, #fff3e0, #ffe0b2); }
+.img-placeholder--amphibian  { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); }
+.img-placeholder--fish       { background: linear-gradient(135deg, #e0f7fa, #b2ebf2); }
+.img-placeholder--insect     { background: linear-gradient(135deg, #f3e5f5, #e1bee7); }
+.img-placeholder--plant      { background: linear-gradient(135deg, #e8f5e9, #a5d6a7); }
+.img-placeholder--marine     { background: linear-gradient(135deg, #e0f7fa, #80deea); }

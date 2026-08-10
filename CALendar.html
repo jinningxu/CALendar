@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CALendar · 加州自然日历</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- ========== 左上角按钮组 ========== -->
+  <div class="top-left-buttons">
+    <button class="ideas-entry-btn" id="ideasEntryBtn" aria-label="信息 / Information" title="信息 / Information">ⓘ</button>
+    <button class="guide-entry-btn" id="guideEntryBtn" aria-label="使用指南 / User Guide" title="使用指南 / User Guide">?</button>
+  </div>
+
+  <!-- ========== 1. 语言切换 (右上角) ========== -->
+  <div class="lang-switcher" role="region" aria-label="语言切换 / Language Switcher">
+    <button class="lang-btn active" data-lang="en" aria-pressed="true">EN</button>
+    <button class="lang-btn" data-lang="zh" aria-pressed="false">中</button>
+  </div>
+
+  <!-- ========== 2. Hero 区域 (当月风光背景) ========== -->
+  <section class="hero" id="hero" aria-label="本月自然景观 / Monthly nature landscape">
+    <div class="hero-image" id="heroImage">
+      <div class="hero-overlay">
+        <h1 class="hero-month-zh lang-zh-only" id="heroMonthZh">一月</h1>
+        <h1 class="hero-month-en lang-en-only" id="heroMonthEn">January</h1>
+        <p class="hero-season lang-zh-only" id="heroSeasonZh"></p>
+        <p class="hero-season lang-en-only" id="heroSeasonEn"></p>
+      </div>
+    </div>
+    <small class="hero-credit lang-zh-only" id="heroCreditZh"></small>
+    <small class="hero-credit lang-en-only" id="heroCreditEn"></small>
+    <small class="hero-copyright" id="heroCopyright">© </small>
+  </section>
+
+  <!-- ========== 3. 日历卡片 (主交互区) ========== -->
+  <main class="calendar-card" id="calendarCard" role="region" aria-label="日历 / Calendar">
+
+    <!-- 3a. 导航栏 -->
+    <div class="calendar-header">
+      <button class="btn-nav" id="btnPrev" aria-label="上个月 / Previous month">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M10 2L4 8L10 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div class="calendar-title" id="calendarTitle" role="button" tabindex="0" aria-label="选择年月 / Select month and year">
+        <span class="title-zh lang-zh-only" id="titleZh">2026年 一月</span>
+        <span class="title-en lang-en-only" id="titleEn">January 2026</span>
+        <svg class="title-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+          <path d="M3 5L6 8L9 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <button class="btn-nav" id="btnNext" aria-label="下个月 / Next month">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M6 2L12 8L6 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button class="btn-today" id="btnToday">
+        <span class="lang-zh-only">今天</span>
+        <span class="lang-en-only">Today</span>
+      </button>
+
+      <!-- 月份跳转器 -->
+      <div class="month-picker" id="monthPicker" hidden>
+        <div class="picker-year-row">
+          <button class="picker-year-btn" id="pickerYearPrev" aria-label="上一年">
+            <svg width="14" height="14" viewBox="0 0 14 14"><path d="M9 3L5 7L9 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <span class="picker-year-label" id="pickerYearLabel">2026</span>
+          <button class="picker-year-btn" id="pickerYearNext" aria-label="下一年">
+            <svg width="14" height="14" viewBox="0 0 14 14"><path d="M5 3L9 7L5 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <div class="picker-month-grid" id="pickerMonthGrid">
+          <!-- JS 动态填充 12 个按钮 -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 3b. 星期标题行 -->
+    <div class="calendar-dow" role="row">
+      <div class="dow-cell dow-weekend"><span class="lang-zh-only">日</span><span class="lang-en-only">Sun</span></div>
+      <div class="dow-cell"><span class="lang-zh-only">一</span><span class="lang-en-only">Mon</span></div>
+      <div class="dow-cell"><span class="lang-zh-only">二</span><span class="lang-en-only">Tue</span></div>
+      <div class="dow-cell"><span class="lang-zh-only">三</span><span class="lang-en-only">Wed</span></div>
+      <div class="dow-cell"><span class="lang-zh-only">四</span><span class="lang-en-only">Thu</span></div>
+      <div class="dow-cell"><span class="lang-zh-only">五</span><span class="lang-en-only">Fri</span></div>
+      <div class="dow-cell dow-weekend"><span class="lang-zh-only">六</span><span class="lang-en-only">Sat</span></div>
+    </div>
+
+    <!-- 3c. 日历网格 (JS 动态生成) -->
+    <div class="calendar-grid" id="calendarGrid" role="grid" aria-label="日历网格 / Calendar grid">
+      <!-- 42 cells generated by calendar.js -->
+    </div>
+  </main>
+
+  <!-- ========== 4. 物种详情弹窗 (默认隐藏) ========== -->
+  <div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalNameZh" hidden>
+    <div class="modal-card" id="modalCard">
+      <!-- 关闭按钮 -->
+      <button class="modal-close" id="modalClose" aria-label="关闭 / Close">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path d="M5 5L15 15M15 5L5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+      <!-- 物种照片 -->
+      <div class="modal-photo" id="modalPhoto">
+        <img src="" alt="" id="modalImg">
+      </div>
+
+      <!-- 图片来源栏 -->
+      <a class="photo-credit-bar" id="photoCreditBar" href="#" target="_blank" rel="noopener">
+        <span class="lang-zh-only" id="creditBarZh">图片来源：iNaturalist</span>
+        <span class="lang-en-only" id="creditBarEn">Photo via iNaturalist</span>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+          <path d="M3.5 1.5H2C1.72386 1.5 1.5 1.72386 1.5 2V10C1.5 10.2761 1.72386 10.5 2 10.5H10C10.2761 10.5 10.5 10.2761 10.5 10V8.5M6 6L10.5 1.5M10.5 1.5H7.5M10.5 1.5V4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+
+      <!-- 详细信息 -->
+      <div class="modal-body">
+        <!-- 名称 -->
+        <div class="modal-names">
+          <h2 class="name-zh lang-zh-only" id="modalNameZh"></h2>
+          <h2 class="name-en lang-en-only" id="modalNameEn"></h2>
+          <em class="name-scientific" id="modalScientific"></em>
+        </div>
+
+        <!-- 类别标签 -->
+        <span class="species-category" id="modalCategory"></span>
+
+        <!-- 分类层级 -->
+        <div class="modal-taxonomy" id="modalTaxonomy">
+          <div class="taxon-row">
+            <span class="taxon-label lang-zh-only">界</span>
+            <span class="taxon-label lang-en-only">Kingdom</span>
+            <span class="taxon-value" id="modalKingdom"></span>
+          </div>
+          <div class="taxon-row">
+            <span class="taxon-label lang-zh-only">门</span>
+            <span class="taxon-label lang-en-only">Phylum</span>
+            <span class="taxon-value" id="modalPhylum"></span>
+          </div>
+          <div class="taxon-row">
+            <span class="taxon-label lang-zh-only">纲</span>
+            <span class="taxon-label lang-en-only">Class</span>
+            <span class="taxon-value" id="modalClass"></span>
+          </div>
+          <div class="taxon-row">
+            <span class="taxon-label lang-zh-only">目</span>
+            <span class="taxon-label lang-en-only">Order</span>
+            <span class="taxon-value" id="modalOrder"></span>
+          </div>
+          <div class="taxon-row">
+            <span class="taxon-label lang-zh-only">科</span>
+            <span class="taxon-label lang-en-only">Family</span>
+            <span class="taxon-value" id="modalFamily"></span>
+          </div>
+          <div class="taxon-row">
+            <span class="taxon-label lang-zh-only">属</span>
+            <span class="taxon-label lang-en-only">Genus</span>
+            <span class="taxon-value" id="modalGenus"></span>
+          </div>
+        </div>
+
+        <!-- 自然日记 -->
+        <div class="modal-journal" id="modalJournal">
+          <h3 class="journal-title">
+            <span class="lang-zh-only">自然日记</span>
+            <span class="lang-en-only">Nature Journal</span>
+          </h3>
+          <textarea class="journal-textarea" id="journalTextarea"
+                    placeholder="记录今天的自然观察…"
+                    data-placeholder-zh="记录今天的自然观察…"
+                    data-placeholder-en="Record today's nature observations…"
+                    maxlength="200"
+                    rows="5"></textarea>
+          <div class="journal-footer">
+            <span class="journal-char-count" id="journalCharCount">0 / 200</span>
+            <button class="journal-save-btn" id="journalSaveBtn">
+              <span class="lang-zh-only">保存</span>
+              <span class="lang-en-only">Save</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 建站想法弹窗 ========== -->
+  <div class="modal-overlay" id="ideasOverlay" hidden>
+    <div class="modal-card ideas-card" id="ideasCard" role="dialog" aria-modal="true" aria-label="信息 / Information">
+      <button class="modal-close" id="ideasClose" aria-label="关闭 / Close">✕</button>
+      <div class="ideas-body">
+          <div class="ideas-header">
+            <p class="ideas-header-title">CALendar · 加州自然日历</p>
+            <p class="ideas-header-sub">2026 · Jinning · Capstone Project of IB11</p>
+          </div>
+          <div class="ideas-content">
+            <!-- 中文 -->
+            <span class="lang-zh-only">
+              <p>CALendar 是一份献给加州自然的情书。它不只是一本日历，更是一扇窗——让你在每一天里，遇见加州山川湖海间的生灵与风景。</p>
+              <p>本项目的核心理念来自IB11导师Dr. Alan Shabel的一句话：「我们生来就是自然主义者，每个人都与自然有着深深连结。」</p>
+              <p>这是2026年夏季在加州大学伯克利分校IB11课程的毕业项目。由Jinning创建，最后更新于2026年8月12日。</p>
+              <p class="ideas-vibe">本网站使用自然语言，由Vibe Coding工具Claude和DeepSeek辅助搭建。</p>
+
+              <hr class="ideas-divider">
+
+              <p class="ideas-ack-title">致谢</p>
+              <ul>
+                <li>IB11 导师：Dr. Alan Shabel</li>
+                <li>所有为 CALendar 提供建议的朋友</li>
+              </ul>
+
+              <div class="ideas-signature">
+                <img src="images/signature.jpg" alt="Jinning 签名" />
+                <p class="ideas-signature-name">Jinning Xu</p>
+                <p class="ideas-signature-date">2026年8月12日</p>
+                <p class="ideas-signature-loc">于 加州大学伯克利分校</p>
+              </div>
+
+              <p class="ideas-copyright">本课程项目所使用图片均源自网络并明确标注来源。如有版权疑问与其他建议，请邮件联系作者。</p>
+
+              <p class="ideas-contact-title">联系方式（邮箱）</p>
+              <ul class="ideas-contact-list">
+                <li><a href="mailto:12511621@mail.sustech.edu.cn">12511621@mail.sustech.edu.cn</a></li>
+                <li><a href="mailto:jinningxu@berkeley.edu">jinningxu@berkeley.edu</a></li>
+              </ul>
+            </span>
+
+            <!-- 英文 -->
+            <span class="lang-en-only">
+              <p>CALendar is a love letter to California's nature. More than a calendar, it is a window — inviting you to encounter, each day, the wildlife and landscapes of California's mountains, shores, and deserts.</p>
+              <p>The project's guiding inspiration comes from IB11 instructor Dr. Alan Shabel, who said, "We are born naturalists, and everyone has a connection with nature."</p>
+              <p>This is the capstone project for IB11 at UC Berkeley in Summer 2026. Created by Jinning, it was last updated on August 12, 2026.</p>
+              <p class="ideas-vibe">This website was built using natural language, assisted by the Vibe Coding tools Claude and DeepSeek.</p>
+
+              <hr class="ideas-divider">
+
+              <p class="ideas-ack-title">Acknowledgements</p>
+              <ul>
+                <li>IB11 Instructor: Dr. Alan Shabel</li>
+                <li>Everyone who provided suggestions for CALendar</li>
+              </ul>
+
+              <div class="ideas-signature">
+                <img src="images/signature.jpg" alt="Signature of Jinning" />
+                <p class="ideas-signature-name">Jinning Xu</p>
+                <p class="ideas-signature-date">August 12, 2026</p>
+                <p class="ideas-signature-loc">at University of California, Berkeley</p>
+              </div>
+
+              <p class="ideas-copyright">All images used in this course project are sourced from the web with sources clearly credited. For copyright concerns or other suggestions, please contact the author via email.</p>
+
+              <p class="ideas-contact-title">Contact (Email)</p>
+              <ul class="ideas-contact-list">
+                <li><a href="mailto:jinningxu@berkeley.edu">jinningxu@berkeley.edu</a></li>
+                <li><a href="mailto:12511621@mail.sustech.edu.cn">12511621@mail.sustech.edu.cn</a></li>
+              </ul>
+            </span>
+          </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 使用指南弹窗 ========== -->
+  <div class="modal-overlay" id="guideOverlay" hidden>
+    <div class="modal-card ideas-card" id="guideCard" role="dialog" aria-modal="true" aria-label="使用指南 / User Guide">
+      <button class="modal-close" id="guideClose" aria-label="关闭 / Close">✕</button>
+      <div class="ideas-body">
+          <div class="ideas-header">
+            <p class="ideas-header-title">
+              <span class="lang-zh-only">使用指南</span>
+              <span class="lang-en-only">User Guide</span>
+            </p>
+          </div>
+          <div class="ideas-content">
+            <!-- 中文 -->
+            <span class="lang-zh-only">
+
+              <h3 class="ideas-section-title">设计宗旨</h3>
+              <p>CALendar 是一份献给加州自然的情书。从雷斯岬的雾霭到约书亚树的星空，十二个月的背景图轮转，呈现加州最为壮阔的自然风貌。本项目的核心理念来自IB11导师Dr. Alan Shabel的一句话：「我们生来就是自然主义者，每个人都与自然有着深深连结。」</p>
+
+              <h3 class="ideas-section-title">功能概览</h3>
+
+              <h4 class="ideas-sub-title">📅 月视图日历</h4>
+              <p>采用Apple Calendar风格的6行×7列月视图网格，每周日作为一周起点。日期数字位于单元格左上角，当前日期以蓝色高亮标示。点击标题栏的年月文字，可打开月份跳转器，快速切换到任意年月。</p>
+
+              <h4 class="ideas-sub-title">🌄 月度风光</h4>
+              <p>每月精选一张加州标志性自然风光高清照片，铺满页面顶部区域，下方标注拍摄地点与署名。从一月雷斯岬海岸到十二月约书亚树国家公园，十二幅画面记录加州四季流转。切换月份时顶部风光会同步变化。</p>
+
+              <h4 class="ideas-sub-title">🦅 加州特有物种</h4>
+              <p>收录超过150种加州特有或常见动植物，涵盖鸟类、哺乳类、爬行类、两栖类、鱼类、昆虫、植物及海洋生物八大类别。每月物种几乎不重复，点击对应日期即可打开详情弹窗，查看物种照片、中英文名称、学名、完整生物分类（界门纲目科属）以及iNaturalist来源链接。</p>
+
+              <h4 class="ideas-sub-title">📝 自然日记</h4>
+              <p>每个物种详情弹窗底部设有自然日记区域。你可以记录当天的自然观察笔记，最多200字，点击保存后数据存储在浏览器本地。切换回该日期可查看和编辑之前的笔记。</p>
+
+              <h4 class="ideas-sub-title">🏮 节假日标注</h4>
+              <p>日历上标注了超过25个中西节假日，包括中国农历节日（春节、元宵、端午、中秋等）和西方节日（新年、情人节、感恩节、圣诞节等）。节日以红色圆点在日期单元格中标示，并附有中英文名称。</p>
+
+              <h4 class="ideas-sub-title">🌙 农历日期</h4>
+              <p>在中文界面下，每个日期单元格右上角会显示对应的农历日期，包含传统农历月份和二十四节气。</p>
+
+              <h4 class="ideas-sub-title">🌐 中英双语</h4>
+              <p>点击右上角「中/EN」按钮即可一键切换全站语言。所有界面文字、物种信息、节日名称均提供完整中英文对照。</p>
+
+              <h4 class="ideas-sub-title">⌨️ 键盘操作</h4>
+              <p>支持完整键盘无障碍操作：左右方向键切换月份；Tab键选中日期单元格；Enter键打开物种详情弹窗；Escape键关闭弹窗或月份跳转器。</p>
+
+              <h4 class="ideas-sub-title">📱 响应式设计</h4>
+              <p>自适应桌面、平板与手机三种屏幕尺寸，确保在各种设备上都有良好的浏览体验。</p>
+
+              <h4 class="ideas-sub-title">🥚 闰日彩蛋</h4>
+              <p>在闰年（如2024年、2028年）的2月29日，日历网格中会出现一个特别的「闰日彩蛋」单元格。点击后将展示关于闰年由来的科普知识，配以圣地亚哥动物园大熊猫的特别照片。这是四年才有一次的隐藏惊喜——大自然多出来的一天，值得被记住。</p>
+
+              <p class="ideas-vibe" style="margin-top: var(--space-lg); padding-top: var(--space-md); border-top: 1px solid var(--color-border);">本网站完全使用自然语言描述需求，由Vibe Coding工具Claude与DeepSeek辅助编写代码搭建而成。</p>
+
+            </span>
+
+            <!-- 英文 -->
+            <span class="lang-en-only">
+
+              <h3 class="ideas-section-title">Design Philosophy</h3>
+              <p>CALendar is a love letter to California's nature. From the misty bluffs of Point Reyes to the star-filled skies of Joshua Tree, twelve monthly hero images capture the state's most spectacular natural scenes in turn. The project's guiding inspiration comes from IB11 instructor Dr. Alan Shabel, who said, "We are born naturalists, and everyone has a connection with nature."</p>
+
+              <h3 class="ideas-section-title">Features</h3>
+
+              <h4 class="ideas-sub-title">📅 Month-View Calendar</h4>
+              <p>An Apple Calendar–inspired 6×7 month-view grid, with Sunday as the first day of the week. Date numbers sit in the top-left corner of each cell, and today's date is highlighted in blue. Click the month-year title to open the month picker and jump to any month or year instantly.</p>
+
+              <h4 class="ideas-sub-title">🌄 Monthly Landscapes</h4>
+              <p>Each month showcases a high-resolution photo of an iconic California landscape that fills the top area of the page. The photo location and credit are displayed below it. From Point Reyes in January to Joshua Tree in December, the twelve images capture California's seasonal rhythms. The landscape changes automatically as you switch between months.</p>
+
+              <h4 class="ideas-sub-title">🦅 California Species</h4>
+              <p>The calendar showcases more than 150 species native to or commonly found in California, spanning eight categories: birds, mammals, reptiles, amphibians, fish, insects, plants, and marine life. Species rarely repeat across months. Click a species date to open a detail modal with photos, bilingual names, scientific name, full taxonomy (kingdom through genus), and an iNaturalist source link.</p>
+
+              <h4 class="ideas-sub-title">📝 Nature Journal</h4>
+              <p>Every species detail modal includes a nature journal section at the bottom. Record your daily nature observations — up to 200 characters. Notes are saved locally in your browser and persist across sessions. Return to any date to view or edit previous entries.</p>
+
+              <h4 class="ideas-sub-title">🏮 Holidays</h4>
+              <p>More than 25 Chinese and Western holidays are marked on the calendar, including Chinese lunar holidays (Spring Festival, Lantern Festival, Dragon Boat Festival, Mid-Autumn Festival, etc.) and Western holidays (New Year's Day, Valentine's Day, Thanksgiving, Christmas, etc.). Holidays appear as red dots with bilingual labels in the date cells.</p>
+
+              <h4 class="ideas-sub-title">🌙 Lunar Calendar</h4>
+              <p>In Chinese mode, each date cell displays the corresponding lunar calendar date in the top-right corner, including traditional lunar months and the 24 solar terms.</p>
+
+              <h4 class="ideas-sub-title">🌐 Bilingual (Chinese / English)</h4>
+              <p>Toggle between Chinese and English instantly using the 中/EN button in the top-right corner. All interface text, species information, and holiday names are fully bilingual.</p>
+
+              <h4 class="ideas-sub-title">⌨️ Keyboard Navigation</h4>
+              <p>Full keyboard accessibility: left/right arrow keys switch months; Tab selects date cells; Enter opens the species detail modal; Escape closes the modal or month picker.</p>
+
+              <h4 class="ideas-sub-title">📱 Responsive Design</h4>
+              <p>Adapts seamlessly to desktop, tablet, and mobile screen sizes for a consistent browsing experience across all devices.</p>
+
+              <h4 class="ideas-sub-title">🥚 Leap Day Easter Egg</h4>
+              <p>On February 29th of leap years (e.g., 2024, 2028), a special "Leap Day Surprise" cell appears in the calendar grid. Click it to learn about the science behind leap years, accompanied by a special photo of the giant pandas at the San Diego Zoo. It's a hidden treat that comes only once every four years — because nature's extra day deserves to be remembered.</p>
+
+              <p class="ideas-vibe" style="margin-top: var(--space-lg); padding-top: var(--space-md); border-top: 1px solid var(--color-border);">This website was built entirely through natural-language prompting, assisted by the Vibe Coding tools Claude and DeepSeek.</p>
+
+            </span>
+          </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 5. 页脚 ========== -->
+  <footer class="site-footer">
+    <p class="footer-title">CALendar · 加州自然日历</p>
+    <p class="footer-sub">2026 · Jinning · Capstone Project of IB11</p>
+  </footer>
+
+  <!-- ========== 脚本 (按依赖顺序加载) ========== -->
+  <script src="js/data.js"></script>
+  <script src="js/calendar.js"></script>
+  <script src="js/modal.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
