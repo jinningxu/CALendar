@@ -220,30 +220,9 @@ var Calendar = (function() {
     });
   };
 
-  /* ---- 构建农历查找表 ---- */
-  Calendar.prototype._buildLunarLookup = function() {
-    if (this._lunarLookup) return this._lunarLookup;
-    var lookup = {};
-    var months = CALENDAR_DATA.lunarMonths;
-    var dayNames = CALENDAR_DATA.lunarDayNames;
-    for (var m = 0; m < months.length; m++) {
-      var parts = months[m][0].split('-');
-      var y = +parts[0], mo = +parts[1] - 1, da = +parts[2];
-      var name = months[m][1];
-      var days = months[m][2];
-      for (var d = 0; d < days; d++) {
-        var dt = new Date(y, mo, da + d);
-        var key = this.formatDate(dt);
-        lookup[key] = (d === 0) ? name : dayNames[d + 1];
-      }
-    }
-    this._lunarLookup = lookup;
-    return lookup;
-  };
-
-  /* ---- 获取农历日期文本 ---- */
+  /* ---- 获取农历日期文本（通过 LunarCalendar 模块）---- */
   Calendar.prototype.getLunarDateText = function(dateStr) {
-    return this._buildLunarLookup()[dateStr];
+    return LunarCalendar.getLunarText(dateStr);
   };
 
   /* ---- 添加农历日期 span (仅中文可见) ---- */
