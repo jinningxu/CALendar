@@ -292,7 +292,8 @@ body.lang-zh .lang-en-only { display: none; }
   position: absolute;
   bottom: 120px;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateZ(0);
+  -webkit-transform: translateX(-50%) translateZ(0);
   width: calc(100% - var(--space-md) * 2);
   max-width: var(--calendar-max-width);
   background: rgba(255, 255, 255, 0.4);
@@ -303,6 +304,7 @@ body.lang-zh .lang-en-only { display: none; }
   overflow: visible;
   z-index: 1;
   max-height: calc(100vh - 180px);
+  isolation: isolate;
 }
 
 /* --- 5a. 导航栏 --- */
@@ -561,7 +563,6 @@ body.lang-zh .lang-en-only { display: none; }
 }
 .cal-cell.padding-day .lunar-date {
   color: var(--color-text-tertiary);
-}
 }
 
 /* 当月日 */
