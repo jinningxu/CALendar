@@ -296,15 +296,31 @@ body.lang-zh .lang-en-only { display: none; }
   -webkit-transform: translateX(-50%) translateZ(0);
   width: calc(100% - var(--space-md) * 2);
   max-width: var(--calendar-max-width);
-  background: rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: transparent;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
   overflow: visible;
   z-index: 1;
   max-height: calc(100vh - 180px);
   isolation: isolate;
+}
+
+/* 将 backdrop-filter 移至伪元素，修复 Safari 渲染穿模问题 */
+.calendar-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* 确保卡片内容渲染在毛玻璃之上 */
+.calendar-card > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* --- 5a. 导航栏 --- */
