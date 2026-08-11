@@ -1342,7 +1342,99 @@ body.lang-zh .lang-en-only { display: none; }
 }
 
 /* ==========================================
-   10. 占位渐变 (图片未加载时)
+   10. 分辨率不足提示遮罩
+   ========================================== */
+.fullscreen-prompt {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 1;
+  transition: opacity var(--ease-normal);
+  padding: var(--space-md);
+}
+
+/* 分辨率达标或手动关闭后隐藏 */
+.fullscreen-prompt.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.fullscreen-prompt-card {
+  background: var(--color-card-bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-modal);
+  max-width: 480px;
+  width: 100%;
+  padding: var(--space-xl) var(--space-2xl) var(--space-xl) var(--space-xl);
+  text-align: center;
+  position: relative;
+  transform: translateY(0);
+  transition: transform var(--ease-normal);
+}
+
+.fullscreen-prompt.hidden .fullscreen-prompt-card {
+  transform: translateY(20px);
+}
+
+.fullscreen-prompt-icon {
+  font-size: 2.5rem;
+  margin-bottom: var(--space-sm);
+  line-height: 1;
+}
+
+.fullscreen-prompt-text {
+  font-size: var(--fs-base);
+  font-weight: 500;
+  color: var(--color-text-primary);
+  line-height: 1.5;
+  margin: 0;
+  padding-right: var(--space-lg);
+}
+
+.fullscreen-prompt-sub {
+  font-size: var(--fs-sm);
+  color: var(--color-text-tertiary);
+  line-height: 1.5;
+  margin: var(--space-sm) 0 0 0;
+  padding-right: var(--space-lg);
+}
+
+.fullscreen-prompt-close {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #1d1d1f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--ease-fast), background var(--ease-fast);
+}
+
+.fullscreen-prompt-close svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2.5;
+}
+
+.fullscreen-prompt-close:hover {
+  color: #000000;
+  background: var(--color-bg);
+}
+
+/* ==========================================
+   11. 占位渐变 (图片未加载时)
    ========================================== */
 /* 物种图片占位渐变 — 按类别区分颜色 */
 .img-placeholder--bird       { background: linear-gradient(135deg, #e3f2fd, #bbdefb); }

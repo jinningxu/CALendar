@@ -30,6 +30,7 @@
     bindLanguageSwitch();
     bindIdeasPanel();
     bindGuidePanel();
+    bindFullscreenPrompt();
     bindGlobalImageFallback();
   }
 
@@ -225,6 +226,45 @@
         closeGuide();
       }
     });
+  }
+
+  /* ---- 分辨率提示 ---- */
+  function bindFullscreenPrompt() {
+    var prompt = document.getElementById('fullscreenPrompt');
+    var closeBtn = document.getElementById('fullscreenPromptClose');
+    if (!prompt) return;
+
+    var MIN_WIDTH = 900;
+    var MIN_HEIGHT = 800;
+    var dismissed = false;  // 用户手动关闭后不再显示
+
+    // 更新提示可见性
+    function updatePrompt() {
+      if (dismissed) return;
+      if (window.innerWidth >= MIN_WIDTH && window.innerHeight >= MIN_HEIGHT) {
+        prompt.classList.add('hidden');
+      } else {
+        prompt.classList.remove('hidden');
+      }
+    }
+
+    // 关闭按钮 → 永久关闭（本次会话）
+    if (closeBtn) {
+      closeBtn.addEventListener('click', function() {
+        dismissed = true;
+        prompt.classList.add('hidden');
+      });
+    }
+
+    // 监听窗口大小变化
+    var resizeTimer;
+    window.addEventListener('resize', function() {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(updatePrompt, 150);
+    });
+
+    // 初始检查
+    updatePrompt();
   }
 
   /* ---- 恢复语言偏好 ---- */
