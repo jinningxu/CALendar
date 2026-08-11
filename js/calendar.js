@@ -212,12 +212,30 @@ var Calendar = (function() {
     cell.setAttribute('aria-label', this.buildAriaLabel(day, dateObj.getDay(), false) + holidayNames);
   };
 
-  /* ---- 查某天是否为节假日 ---- */
+  /* ---- 查某天是否为节假日（静态 + 动态农历节日）---- */
   Calendar.prototype.getHolidaysForDate = function(day) {
     var self = this;
-    return CALENDAR_DATA.holidays.filter(function(h) {
-      return h.month === self.currentMonth + 1 && h.day === day;
+    var month = self.currentMonth + 1;
+
+    // 农历节日名称（这些节日日期随年份变动，由 LunarCalendar 动态计算）
+    var LUNAR_HOLIDAY_NAMES = ['除夕', '春节', '元宵节', '端午节', '七夕节', '中秋节', '重阳节'];
+
+    // 静态节日：western / both 类型 + 固定日期的中国节日（清明、国庆、光棍节等）
+    var staticHolidays = CALENDAR_DATA.holidays.filter(function(h) {
+      return h.month === month && h.day === day &&
+             LUNAR_HOLIDAY_NAMES.indexOf(h.nameZh) === -1;
     });
+
+    // 动态农历节日（按年缓存）
+    if (!this._lunarHolidaysCache || this._lunarHolidaysYear !== self.currentYear) {
+      this._lunarHolidaysCache = LunarCalendar.getLunarHolidays(self.currentYear);
+      this._lunarHolidaysYear = self.currentYear;
+    }
+    var lunarHolidays = this._lunarHolidaysCache.filter(function(h) {
+      return h.month === month && h.day === day;
+    });
+
+    return staticHolidays.concat(lunarHolidays);
   };
 
   /* ---- 获取农历日期文本（通过 LunarCalendar 模块）---- */

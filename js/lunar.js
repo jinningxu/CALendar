@@ -185,9 +185,89 @@ var LunarCalendar = (function() {
     return DAY_NAMES[lunarDay] || ('' + lunarDay);
   }
 
+  /* ---- 反向查找：农历日期 → 公历日期 ---- */
+  function gregorianFromLunar(year, lunarMonth, lunarDay) {
+    var cnyTime = getSpringFestivalUTC(year);
+    if (cnyTime === null) return null;
+
+    var lunarYearIndex = year - 1900;
+    if (lunarYearIndex < 0 || lunarYearIndex >= LUNAR_INFO.length) return null;
+
+    var leap = leapMonth(lunarYearIndex);
+    var offset = 0;
+
+    for (var m = 1; m < lunarMonth; m++) {
+      offset += monthDays(lunarYearIndex, m);
+      if (leap === m) offset += leapDays(lunarYearIndex);
+    }
+    offset += lunarDay - 1;
+
+    var gregTime = cnyTime + offset * 86400000;
+    var d = new Date(gregTime);
+    return {
+      year: d.getUTCFullYear(),
+      month: d.getUTCMonth() + 1,
+      day: d.getUTCDate()
+    };
+  }
+
+  /* ---- 计算某年的所有农历节日公历日期 ---- */
+  function getLunarHolidays(year) {
+    var holidays = [];
+    var lunarYearIndex = year - 1900;
+    if (lunarYearIndex < 0 || lunarYearIndex >= LUNAR_INFO.length) return holidays;
+
+    // 春节 (正月初一)
+    var cny = gregorianFromLunar(year, 1, 1);
+    if (cny) {
+      holidays.push({ month: cny.month, day: cny.day,
+        nameZh: '春节', nameEn: 'Chinese New Year', type: 'chinese' });
+    }
+
+    // 除夕 (十二月最后一天 = 当年春节前一天)
+    var cnyTime = getSpringFestivalUTC(year);
+    if (cnyTime !== null) {
+      var chuxiTime = cnyTime - 86400000;
+      var chuxiDate = new Date(chuxiTime);
+      holidays.push({
+        month: chuxiDate.getUTCMonth() + 1,
+        day: chuxiDate.getUTCDate(),
+        nameZh: '除夕', nameEn: "Chinese New Year's Eve", type: 'chinese'
+      });
+    }
+
+    // 元宵节 (正月十五)
+    var yx = gregorianFromLunar(year, 1, 15);
+    if (yx) holidays.push({ month: yx.month, day: yx.day,
+      nameZh: '元宵节', nameEn: 'Lantern Festival', type: 'chinese' });
+
+    // 端午节 (五月初五)
+    var dw = gregorianFromLunar(year, 5, 5);
+    if (dw) holidays.push({ month: dw.month, day: dw.day,
+      nameZh: '端午节', nameEn: 'Dragon Boat Festival', type: 'chinese' });
+
+    // 七夕节 (七月初七)
+    var qx = gregorianFromLunar(year, 7, 7);
+    if (qx) holidays.push({ month: qx.month, day: qx.day,
+      nameZh: '七夕节', nameEn: 'Qixi Festival', type: 'chinese' });
+
+    // 中秋节 (八月十五)
+    var zq = gregorianFromLunar(year, 8, 15);
+    if (zq) holidays.push({ month: zq.month, day: zq.day,
+      nameZh: '中秋节', nameEn: 'Mid-Autumn Festival', type: 'chinese' });
+
+    // 重阳节 (九月初九)
+    var cy = gregorianFromLunar(year, 9, 9);
+    if (cy) holidays.push({ month: cy.month, day: cy.day,
+      nameZh: '重阳节', nameEn: 'Double Ninth Festival', type: 'chinese' });
+
+    return holidays;
+  }
+
   /* ---- 公开 API ---- */
   return {
-    getLunarText: getLunarText
+    getLunarText: getLunarText,
+    getLunarHolidays: getLunarHolidays
   };
 
 })();
