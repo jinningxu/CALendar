@@ -212,6 +212,14 @@ var Calendar = (function() {
     cell.setAttribute('aria-label', this.buildAriaLabel(day, dateObj.getDay(), false) + holidayNames);
   };
 
+  /* ---- 计算"第几个周几"类节日在某年的实际日期 ----
+     rule.weekday: 0=周日 ... 6=周六（与 Date.getDay() 一致）
+     rule.nth: 该周几在当月第几次出现（1=第一个）              */
+  Calendar.prototype.getRuleHolidayDay = function(year, month, rule) {
+    var firstWeekday = new Date(year, month - 1, 1).getDay();
+    return 1 + (rule.weekday - firstWeekday + 7) % 7 + (rule.nth - 1) * 7;
+  };
+
   /* ---- 查某天是否为节假日（静态 + 动态农历节日）---- */
   Calendar.prototype.getHolidaysForDate = function(day) {
     var self = this;
@@ -222,8 +230,13 @@ var Calendar = (function() {
 
     // 静态节日：western / both 类型 + 固定日期的中国节日（清明、国庆、光棍节等）
     var staticHolidays = CALENDAR_DATA.holidays.filter(function(h) {
-      return h.month === month && h.day === day &&
-             LUNAR_HOLIDAY_NAMES.indexOf(h.nameZh) === -1;
+      if (LUNAR_HOLIDAY_NAMES.indexOf(h.nameZh) !== -1) return false;
+      if (h.rule) {
+        // 浮动节日（如 9 月第一个周一 = 美国劳动节）：按当年实际日期匹配
+        return h.month === month &&
+               self.getRuleHolidayDay(self.currentYear, h.month, h.rule) === day;
+      }
+      return h.month === month && h.day === day;
     });
 
     // 动态农历节日（按年缓存）

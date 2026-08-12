@@ -3116,7 +3116,7 @@ var CALENDAR_DATA = {
     },
     {
       "month": 5,
-      "day": 11,
+      "rule": { "weekday": 0, "nth": 2 },
       "nameZh": "母亲节",
       "nameEn": "Mother's Day",
       "type": "western"
@@ -3130,7 +3130,7 @@ var CALENDAR_DATA = {
     },
     {
       "month": 6,
-      "day": 15,
+      "rule": { "weekday": 0, "nth": 3 },
       "nameZh": "父亲节",
       "nameEn": "Father's Day",
       "type": "western"
@@ -3165,7 +3165,7 @@ var CALENDAR_DATA = {
     },
     {
       "month": 9,
-      "day": 1,
+      "rule": { "weekday": 1, "nth": 1 },
       "nameZh": "美国劳动节",
       "nameEn": "Labor Day (US)",
       "type": "western"
@@ -3214,7 +3214,7 @@ var CALENDAR_DATA = {
     },
     {
       "month": 11,
-      "day": 27,
+      "rule": { "weekday": 4, "nth": 4 },
       "nameZh": "感恩节",
       "nameEn": "Thanksgiving",
       "type": "western"
