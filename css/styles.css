@@ -331,6 +331,7 @@ body.lang-zh .lang-en-only { display: none; }
   padding: var(--space-lg) var(--space-lg) var(--space-md);
   gap: var(--space-sm);
   position: relative;
+  z-index: 10;
   background: transparent;
 }
 
@@ -417,7 +418,7 @@ body.lang-zh .lang-en-only { display: none; }
   border-radius: var(--radius-md);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.14);
   padding: var(--space-md);
-  z-index: 20;
+  z-index: 100;
   min-width: 260px;
   margin-top: 4px;
 }
